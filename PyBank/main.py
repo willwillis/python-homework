@@ -23,10 +23,11 @@ REFERENCE
 https://docs.dask.org/en/latest/dataframe.html
 
   """
-
-import dask.dataframe as dd
-budget_data = 'C:/Users/williw3/Downloads/xStore/BCS/github/python-homework/PyBank/budget_data.csv'
-df = dd.read_csv(budget_data)
+import numpy as mp
+import pandas as pd
+#import dask.dataframe as dd
+budget_data = './budget_data.csv'
+df = pd.read_csv(budget_data)
 
 #print(f"Reading {budget_data}...\n\n" , df.head(), "\n\n")
 
@@ -38,12 +39,20 @@ months_total = len(df)
 print(f"Total Months: {months_total}")
 
 # Net Profit/Loss over time
-net_total = df['Profit/Losses'].sum().compute() #axis = 0, skipna = True)
+net_total = df['Profit/Losses'].sum()
 print(f"Total: ${net_total}")
 
+# I think that's as far as I can get with pandas
 # Average Change
 #average_change = df['Profit/Losses'].pct_change()
 #print(average_change)
 
+row_count = 0
+row_deltas = []
+row_min = {}
+row_max = {}
 
-
+for i, row in df.iterrows():
+  date = row[0]
+  pl = row[1]
+  
