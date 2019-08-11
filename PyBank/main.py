@@ -22,7 +22,8 @@ Your resulting analysis should look similar to the following:
 REFERENCE 
 https://docs.dask.org/en/latest/dataframe.html
 
-  """
+"""
+
 import numpy as mp
 import pandas as pd
 #import dask.dataframe as dd
@@ -44,15 +45,14 @@ print(f"Total: ${net_total}")
 
 # I think that's as far as I can get with pandas
 # Average Change
-#average_change = df['Profit/Losses'].pct_change()
-#print(average_change)
+pl_list = df['Profit/Losses'].tolist()
 
-row_count = 0
-row_deltas = []
-row_min = {}
-row_max = {}
+delta_list = []
 
-for i, row in df.iterrows():
-  date = row[0]
-  pl = row[1]
-  
+for daily in range(pl_list-1):
+  curr_day = pl_list[daily]
+  next_day = pl_list[daily+1]
+  delta = next_day - curr_day
+  delta_list.append(delta)
+
+  pl_min = min()
