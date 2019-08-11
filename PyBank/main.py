@@ -1,58 +1,48 @@
-"""
-INSTRUCTIONS
+# Will Willis
+# doing this w/o pandas, per slack.
+# referencing 09-ins_CSV_Reader from class
+# found enumerate from here: https://stackoverflow.com/questions/15684605/python-for-loop-get-index
+# even tho I didn't end up using the indicies in that loop : )
+# 
+#
+from pathlib import Path
+import csv
 
-  Your task is to create a Python script that analyzes the records to calculate each of the following:
+budget_csv = './budget_data.csv'
+out_file = Path("./out.txt")
 
-  DONE The total number of months included in the dataset.
-  DONE The net total amount of Profit/Losses over the entire period.
-  The average of the changes in Profit/Losses over the entire period.
-  The greatest increase in profits (date and amount) over the entire period.
-  The greatest decrease in losses (date and amount) over the entire period.
+net_total_pl = 0
+months_list = []
+pl_list = []
+deltas = []
 
-Your resulting analysis should look similar to the following:
+with open(budget_csv, 'r') as csvfile:
+    csvreader = csv.reader(csvfile, delimiter=',')
+    header = next(csvreader) # next() seems like a not-so-unique function name to export
+    for index, row in enumerate(csvreader):
+        date = row[0]
+        pl = row[1]
+        months_list.append(date)
+        pl_list.append(int(pl))
 
-  Financial Analysis
-  ----------------------------
-  Total Months: 86
-  Total: $38382578
-  Average  Change: $-2315.12
-  Greatest Increase in Profits: Feb-2012 ($1926159)
-  Greatest Decrease in Profits: Sep-2013 ($-2196167)
+    for i in (range(len(pl_list)-1)):
+        delta=(pl_list[int(i)+1] - pl_list[int(i)])
+        deltas.append(delta)
 
-REFERENCE 
-https://docs.dask.org/en/latest/dataframe.html
+    for val in pl_list:
+        net_total_pl += val
 
-"""
+max_index = deltas.index(max(deltas))
+min_index = deltas.index(min(deltas))
 
-import numpy as mp
-import pandas as pd
-#import dask.dataframe as dd
-budget_data = './budget_data.csv'
-df = pd.read_csv(budget_data)
+output =  ("Financial Analysis\n----------------------------\n")
+output += (f"Total Months: {len(pl_list)}\n")
+output += (f"Total: ${net_total_pl}\n")
+output += (f"Average Change: ${net_total_pl/len(pl_list):.2f}\n")
+output += (f"Greatest Increase in Profits: {months_list[max_index+1]} (${deltas[max_index]})\n")
+output += (f"Greatest Decrease in Profits: {months_list[min_index+1]} (${deltas[min_index]})\n")
 
-#print(f"Reading {budget_data}...\n\n" , df.head(), "\n\n")
+print(output)
 
-# Print Heading
-print("Financial Analysis\n----------------------------")
-
-# Total Months, Assuming there are no duplicate Year/Month combos
-months_total = len(df)
-print(f"Total Months: {months_total}")
-
-# Net Profit/Loss over time
-net_total = df['Profit/Losses'].sum()
-print(f"Total: ${net_total}")
-
-# I think that's as far as I can get with pandas
-# Average Change
-pl_list = df['Profit/Losses'].tolist()
-
-delta_list = []
-
-for daily in range(pl_list-1):
-  curr_day = pl_list[daily]
-  next_day = pl_list[daily+1]
-  delta = next_day - curr_day
-  delta_list.append(delta)
-
-  pl_min = min()
+with open(out_file, 'w') as out:
+    out.write(output)
